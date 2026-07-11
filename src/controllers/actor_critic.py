@@ -110,6 +110,10 @@ class ActorCritic(Controller):
         values = self.get_values(agent_id, histories).squeeze().detach()
         action_probs = actor_net(histories)
         advantages = returns.detach() - values.detach()
+
+        # Return normalization to reduce variance and introduce invariance of ac update to reward change
+        advantages = (advantages - advantages.mean()) / (advantages.std() + self.eps)
+        
         actor_loss = self.policy_loss(advantages.detach(), action_probs, actions, old_probs).sum()
         actor_net.optimizer.zero_grad()
         actor_loss.backward()

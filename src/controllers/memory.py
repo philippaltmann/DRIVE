@@ -56,15 +56,11 @@ class ExperienceMemory:
             self.abs_incentive_cost += local_abs_incentive_cost
     
     def get_training_data(self):
-        self.returns = numpy.asarray(self.returns)
-        mu = numpy.mean(self.returns)
-        sigma = numpy.std(self.returns)
-        self.returns = (self.returns - mu)/(sigma + self.eps)
         return torch.tensor(numpy.asarray(self.histories), dtype=torch.float32, device=self.device),\
             torch.tensor(numpy.asarray(self.next_histories), dtype=torch.float32, device=self.device),\
             torch.tensor(numpy.asarray(self.actions), dtype=torch.long, device=self.device),\
             torch.tensor(numpy.asarray(self.rewards), dtype=torch.float32, device=self.device),\
-            torch.tensor(self.returns, dtype=torch.float32, device=self.device),\
+            torch.tensor(numpy.asarray(self.returns), dtype=torch.float32, device=self.device),\
             torch.tensor(numpy.asarray(self.old_probs), dtype=torch.float32, device=self.device),\
             torch.tensor(numpy.asarray(self.dones), dtype=torch.float32, device=self.device),\
             torch.tensor(numpy.asarray(self.reward_actions), dtype=torch.float32, device=self.device)
