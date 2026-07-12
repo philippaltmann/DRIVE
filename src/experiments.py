@@ -11,11 +11,11 @@ def run_episode(epoch, env, controller, params):
     request_messages_sent = 0
     response_messages_sent = 0
     drift_function = params["drift_function"]
+    controller.R_max = drift_function(epoch, params["R_max"])
     while not done:
         joint_action, joint_probs = controller.policy(observations)
         next_observations, rewards, done, info = env.step(joint_action)
         rewards = drift_function(epoch, rewards)
-        controller.R_max = drift_function(epoch, params["R_max"])
         joint_probs_history.append(joint_probs)
         time_step += 1
         transition = controller.update(observations, joint_action, rewards, next_observations, done, info)
@@ -61,7 +61,7 @@ def run_episodes(epoch, nr_episodes, env, controller, params):
         "messages_sent": messages_sent
     }
 
-def run_training(env, controller, params):
+def run_training(env, controller, params, log_frequency=20):
     episodes_per_epoch = params["episodes_per_epoch"]
     discounted_returns = [[] for _ in range(env.nr_agents)]
     undiscounted_returns = [[] for _ in range(env.nr_agents)]
@@ -75,9 +75,10 @@ def run_training(env, controller, params):
         start = time.time()
         result = run_episodes(i, episodes_per_epoch, env, controller, params)
         end = time.time() - start
-        print(f"Finished epoch {i} ({params['algorithm_name']}, {params['domain_name']}, {params['nr_agents']} agents):")
-        print(f"- Discounted return:   {result['discounted_returns']} -> {numpy.sum(result['discounted_returns'])}")
-        print(f"- Undiscounted return: {result['undiscounted_returns']} -> {numpy.sum(result['undiscounted_returns'])}")
+        if not (i+1) % log_frequency: 
+          print(f"Finished epoch {i+1} ({params['algorithm_name']}, {params['domain_name']}, {params['nr_agents']} agents):")
+          print(f"- Discounted return:   {result['discounted_returns']} -> {numpy.sum(result['discounted_returns'])}")
+          print(f"- Undiscounted return: {result['undiscounted_returns']} -> {numpy.sum(result['undiscounted_returns'])}")
         mean_domain_values = result["domain_values"]
         assert len(mean_domain_values) == len(env.domain_values())
         a, b = env.domain_value_debugging_indices()
@@ -91,8 +92,10 @@ def run_training(env, controller, params):
         messages_sent.append(result["messages_sent"])
         sent = result["sent_gifts"]
         sent_gifts.append(sent)
-        print(f"- Domain value: {domain_value}")
-        print(f"- Time elapsed: {end} seconds")
+        if not (i+1) % log_frequency: 
+          # print("Domain value: ", result["domain_values"], domain_value)
+          print(f"- Domain value: {domain_value}")
+          print(f"- Time elapsed: {end} seconds")
         for i in range(env.nr_agents):
             token_values[i].append(float(controller.token_values[i]))
         for return_list, new_return in zip(discounted_returns, result["discounted_returns"]):
