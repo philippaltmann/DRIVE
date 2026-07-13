@@ -17,11 +17,10 @@ def list_files(pathname, predicate=None):
 def list_files_with_predicate(pathname, predicate):
     return [join(pathname, f) for f in listdir(pathname) if predicate(pathname, f)]
 
-def mkdir_with_timestap(pathname):
+def mkdir_with_timestap(pathname, seed=None):
     datetimetext = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    dir_name = "{}_{}".format(pathname, datetimetext)
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+    dir_name = "{}_{}".format(pathname, seed or datetimetext)
+    if not os.path.exists(dir_name): os.makedirs(dir_name)
     return dir_name
 
 def save_json(filename, data):
