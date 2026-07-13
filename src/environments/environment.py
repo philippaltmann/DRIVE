@@ -14,7 +14,7 @@ class Environment:
         self.discounted_returns = numpy.zeros(self.nr_agents)
         self.undiscounted_returns = numpy.zeros(self.nr_agents)
         self.domain_counts = numpy.zeros(len(self.domain_value_labels))
-        self.last_joint_action = -numpy.ones(self.nr_agents, dtype=numpy.int)
+        self.last_joint_action = -numpy.ones(self.nr_agents, dtype=int)
 
     """
      Performs the joint action in order to change the environment.
