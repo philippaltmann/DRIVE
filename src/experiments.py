@@ -11,7 +11,7 @@ def run_episode(epoch, env, controller, params):
     request_messages_sent = 0
     response_messages_sent = 0
     drift_function = params["drift_function"]
-    controller.R_max = max(drift_function(epoch, params["R_max"]))
+    controller.R_max = numpy.max(drift_function(epoch, params["R_max"]))
     while not done:
         joint_action, joint_probs = controller.policy(observations)
         next_observations, rewards, done, info = env.step(joint_action)
