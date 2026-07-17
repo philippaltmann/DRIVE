@@ -61,7 +61,7 @@ def run_episodes(epoch, nr_episodes, env, controller, params):
         "messages_sent": messages_sent
     }
 
-def run_training(env, controller, params, log_frequency=20):
+def run_training(env, controller, params, log_frequency=1):
     episodes_per_epoch = params["episodes_per_epoch"]
     discounted_returns = [[] for _ in range(env.nr_agents)]
     undiscounted_returns = [[] for _ in range(env.nr_agents)]
