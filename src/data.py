@@ -23,6 +23,10 @@ def mkdir_with_timestap(pathname, seed=None):
     if not os.path.exists(dir_name): os.makedirs(dir_name)
     return dir_name
 
+def mkdir(params, seed):
+    directory_name = f"{params['nr_agents']}-agents_domain-{params['domain_name']}_drift-{params['drift']}_{params['algorithm_name']}"
+    return mkdir_with_timestap(f"{params['output_folder']}/{directory_name}", seed)
+
 def save_json(filename, data):
     with open(filename, 'w') as data_file:
         json.dump(data, data_file)
