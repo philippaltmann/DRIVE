@@ -4,7 +4,7 @@ import random
 import numpy as np
 import torch as th
 
-from settings import params
+from train.settings import params
 import src.domains as domains
 import src.algorithms as algorithms
 import src.experiments as experiments
