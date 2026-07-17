@@ -48,6 +48,7 @@ class LIO(ActorCritic):
                 self.nr_actions, params["nr_hidden_units"], self.learning_rate)
             self.incentive_nets.append(incentive_net.to(self.device))
         self.update_policy = True
+        self.R_max = torch.as_tensor(get_param_or_default(params, "R_max", 3))
 
     def update_step(self):
         preprocessed_data = self.preprocess()
@@ -77,7 +78,7 @@ class LIO(ActorCritic):
             incentives_ = incentive_net(histories, joint_actions)
             incentives.append(incentives_)
             reward_incentives = incentives_.exp()*self.R_max # h_length, n_agents
-            self.token_values[i] = torch.mean(reward_incentives)
+            self.token_values[i] = torch.mean(reward_incentives.detach())
             for t, done, incentive in zip(range(len(dones)), dones, reward_incentives):
                 send_enabled = self.sample_no_comm_failure()
                 if done:
